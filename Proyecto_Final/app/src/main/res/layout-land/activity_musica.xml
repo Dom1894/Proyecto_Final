@@ -1,0 +1,52 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@drawable/img"
+    >
+
+    <Button
+        android:id="@+id/regresar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Atras"
+        android:textColor="@color/white"
+        android:backgroundTint="#C8BCB9"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        ></Button>
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Interfaz Musica"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="80sp"
+        android:background="@drawable/border_background"
+        ></TextView>
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/titulo"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:text="Conectar"
+        android:backgroundTint="#C8BCB9"
+        ></Button>
+
+    <Button
+        android:id="@+id/seleccionar_musica"
+        android:layout_width="300dp"
+        android:layout_height="55dp"
+        android:layout_below="@id/titulo"
+        android:layout_marginTop="130dp"
+        android:layout_centerHorizontal="true"
+        android:text="Seleccionar Musica"
+        android:textSize="20dp"
+        android:backgroundTint="#C8BCB9"
+        ></Button>
+
+</RelativeLayout>
