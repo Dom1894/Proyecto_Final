@@ -27,6 +27,27 @@
         android:layout_marginTop="80sp"
         android:background="@drawable/border_background"
         ></TextView>
+    <Button
+        android:id="@+id/ventanas_ON"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#04FF00"
+        android:layout_below="@id/titulo"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="350dp"
+        android:text="ON"
+        ></Button>
+    <Button
+        android:id="@+id/ventanas_off"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#FF2D00"
+        android:layout_below="@id/titulo"
+        android:layout_toRightOf="@id/ventanas_ON"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="350dp"
+        android:text="OFF"
+        ></Button>
 
 
 </RelativeLayout>
