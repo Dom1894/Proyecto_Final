@@ -34,7 +34,7 @@
         android:backgroundTint="#04FF00"
         android:layout_below="@id/titulo"
         android:layout_marginStart="80dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="300dp"
         android:text="ON"
         ></Button>
     <Button
@@ -45,9 +45,48 @@
         android:layout_below="@id/titulo"
         android:layout_toRightOf="@id/ventanas_ON"
         android:layout_marginStart="80dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="300dp"
         android:text="OFF"
         ></Button>
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="250dp"
+        android:layout_below="@id/titulo"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/img_1"
+        android:layout_marginTop="30dp"
+        ></TextView>
 
+    <Spinner
+        android:id="@+id/disponibles"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:background="#C8BCB9"
+        android:textAlignment="center"
+        ></Spinner>
+    <Button
+        android:id="@+id/conectar"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/disponibles"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="80dp"
+        android:text="Conectar"
+        android:backgroundTint="#C8BCB9"
+        ></Button>
+
+    <Button
+        android:id="@+id/disp"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/disponibles"
+        android:layout_toRightOf="@id/conectar"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:text="Disponible"
+        android:backgroundTint="#C8BCB9"
+        ></Button>
 
 </RelativeLayout>
