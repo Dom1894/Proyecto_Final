@@ -23,7 +23,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class luz extends AppCompatActivity {
+public class LuzActivity extends AppCompatActivity {
 
     private BluetoothAdapter mBtAdapter;
     private ArrayList<String> mNameDevices;
@@ -35,13 +35,10 @@ public class luz extends AppCompatActivity {
             final String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (device != null) {
-                    String deviceName = device.getName();
-                    if (deviceName != null && !mNameDevices.contains(deviceName)) {
-                        mNameDevices.add(deviceName);
-                        mBluetoothDevices.add(device);
-                        updateSpinner();
-                    }
+                if (device != null && !mBluetoothDevices.contains(device)) {
+                    mNameDevices.add(device.getName());
+                    mBluetoothDevices.add(device);
+                    updateSpinner();
                 }
             }
         }
@@ -59,6 +56,12 @@ public class luz extends AppCompatActivity {
         setContentView(R.layout.activity_luz);
 
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBtAdapter == null) {
+            Toast.makeText(this, "Bluetooth no es compatible", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         mNameDevices = new ArrayList<>();
         mBluetoothDevices = new ArrayList<>();
 
@@ -69,18 +72,19 @@ public class luz extends AppCompatActivity {
         conectarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Implementar la funcionalidad para el botón "Conectar"
+                int position = disponiblesSpinner.getSelectedItemPosition();
+                if (position != AdapterView.INVALID_POSITION) {
+                    BluetoothDevice selectedDevice = mBluetoothDevices.get(position);
+                    // Implementar la funcionalidad para conectar al dispositivo seleccionado
+                } else {
+                    Toast.makeText(LuzActivity.this, "No se ha seleccionado ningún dispositivo", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         dispButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mBtAdapter == null) {
-                    Toast.makeText(getApplicationContext(), "Bluetooth no es compatible", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
                 if (!mBtAdapter.isEnabled()) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, 1);
