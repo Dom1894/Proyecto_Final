@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 import java.util.UUID;
 
 public class musica extends AppCompatActivity {
@@ -22,8 +23,8 @@ public class musica extends AppCompatActivity {
     private static final int READ_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     private static final int REQUEST_SELECT_MUSIC = 2;
 
-    Button regresar;
-    Button seleccionarMusica;
+    private Button regresar;
+    private Button seleccionarMusica;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,11 @@ public class musica extends AppCompatActivity {
 
         if (requestCode == REQUEST_SELECT_MUSIC && resultCode == RESULT_OK && data != null) {
             Uri selectedMusicUri = data.getData();
-            playMusicViaBluetooth(selectedMusicUri);
+            if (selectedMusicUri != null) {
+                playMusicViaBluetooth(selectedMusicUri);
+            } else {
+                Toast.makeText(this, "No se pudo obtener la música seleccionada", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -78,8 +83,13 @@ public class musica extends AppCompatActivity {
             return;
         }
 
-        // Obtener el dispositivo Bluetooth vinculado o buscar dispositivos cercanos
-        // según tus necesidades y el tipo de dispositivo Bluetooth al que te conectes.
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.isEmpty()) {
+            Toast.makeText(this, "No hay dispositivos Bluetooth vinculados", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Aquí puedes mostrar un diálogo para que el usuario elija el dispositivo Bluetooth al que desea conectarse
 
         // Establecer la conexión Bluetooth y enviar los datos para reproducir la música.
         ConnectBluetoothTask connectBluetoothTask = new ConnectBluetoothTask(bluetoothAdapter, musicUri);
@@ -110,7 +120,8 @@ public class musica extends AppCompatActivity {
                 OutputStream outputStream = socket.getOutputStream();
                 // ... (Aquí es donde enviarías la música a través del socket Bluetooth)
 
-                socket.close();
+                outputStream.close(); // Cerrar el flujo de salida
+                socket.close(); // Cerrar el socket
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,8 +134,9 @@ public class musica extends AppCompatActivity {
             if (success) {
                 Toast.makeText(musica.this, "Reproduciendo música en Bluetooth", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(musica.this, "Error al conectar con el dispositivo Bluetooth", Toast.LENGTH_SHORT).show();
+                Toast.makeText(musica.this, "Error al conectar o transmitir la música por Bluetooth", Toast.LENGTH_SHORT).show();
             }
         }
     }
 }
+
