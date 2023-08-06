@@ -1,6 +1,7 @@
 package com.example.proyecto_final;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Set;
@@ -89,7 +91,7 @@ public class musica extends AppCompatActivity {
             return;
         }
 
-        // Aquí puedes mostrar un diálogo para que el usuario elija el dispositivo Bluetooth al que desea conectarse
+        // TODO: Mostrar un diálogo para que el usuario elija el dispositivo Bluetooth al que desea conectarse
 
         // Establecer la conexión Bluetooth y enviar los datos para reproducir la música.
         ConnectBluetoothTask connectBluetoothTask = new ConnectBluetoothTask(bluetoothAdapter, musicUri);
@@ -139,4 +141,3 @@ public class musica extends AppCompatActivity {
         }
     }
 }
-
