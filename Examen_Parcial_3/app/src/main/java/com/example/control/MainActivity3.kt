@@ -14,10 +14,10 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.util.Log
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.core.app.ActivityCompat
 import java.io.IOException
-import java.io.InputStream
 import java.io.OutputStream
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -26,7 +26,6 @@ import android.hardware.SensorManager
 import android.os.Handler
 import java.util.*
 import com.example.control.Constants
-import java.io.File
 
 class MainActivity3 : AppCompatActivity(), SensorEventListener {
     val requestCode = Constants.REQUEST_ENABLE_BT
@@ -60,9 +59,7 @@ class MainActivity3 : AppCompatActivity(), SensorEventListener {
         //////////////
         val seleccionar_musica = findViewById<Button>(R.id.seleccionar_musica)
         seleccionar_musica.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "audio/*"
-            someActivityResultLauncher.launch(intent)
+            someActivityResultLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).setType("audio/*"))
         }
         /////////////
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
@@ -131,52 +128,26 @@ class MainActivity3 : AppCompatActivity(), SensorEventListener {
 
                     val IntValSpin = idSpinDisp.selectedItemPosition
                     m_address = mAddressDevices!!.getItem(IntValSpin).toString()
-                    Toast.makeText(this,m_address,Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, m_address, Toast.LENGTH_LONG).show()
                     // Cancel discovery because it otherwise slows down the connection.
                     mBtAdapter?.cancelDiscovery()
                     val device: BluetoothDevice = mBtAdapter.getRemoteDevice(m_address)
                     m_bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(m_myUUID)
                     m_bluetoothSocket!!.connect()
                 }
-                Toast.makeText(this,"CONEXION EXITOSA",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "CONEXION EXITOSA", Toast.LENGTH_LONG).show()
                 Log.i("MainActivity", "CONEXION EXITOSA")
             } catch (e: IOException) {
                 //connectSuccess = false
                 e.printStackTrace()
-                Toast.makeText(this,"ERROR DE CONEXION",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "ERROR DE CONEXION", Toast.LENGTH_LONG).show()
                 Log.i("MainActivity", "ERROR DE CONEXION")
-            }
-        }
-        val someActivityResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == REQUEST_ENABLE_BT) {
-                Log.i("MainActivity", "ACTIVIDAD REGISTRADA")
-            } else if (result.resultCode == RESULT_OK && result.data != null) {
-                val uri = result.data!!.data
-                if (uri != null) {
-                    val path = uri.path  // Obtener la ruta de la canción seleccionada
-                    // Aquí deberías implementar la lógica para enviar el archivo de audio por Bluetooth y reproducir en la bocina.
-                    // Puedes usar la variable 'path' para obtener la ruta del archivo de audio y luego enviarlo por Bluetooth.
-                    val file = File(path)
-                    val filename = file.name
-                    val outputStream = m_bluetoothSocket!!.outputStream
-                    val inputStream: InputStream = contentResolver.openInputStream(uri)!!
-                    val buffer = ByteArray(1024)
-                    var bytesRead: Int
-                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                        outputStream.write(buffer, 0, bytesRead)
-                    }
-                    outputStream.flush()
-                    inputStream.close()
-                    Toast.makeText(this, "Canción enviada: $filename", Toast.LENGTH_LONG).show()
-                }
             }
         }
 
         mBtAdapter = (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
         if (mBtAdapter == null) {
-            Toast.makeText(this, "Bluetooth no disponible en este dipositivo", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Bluetooth no disponible en este dispositivo", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(this, "Bluetooth disponible en este dispositivo", Toast.LENGTH_LONG).show()
         }
@@ -237,6 +208,22 @@ class MainActivity3 : AppCompatActivity(), SensorEventListener {
                 outputStream.flush()
             } catch (e: IOException) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    private val someActivityResultLauncher = registerForActivityResult(
+        StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == REQUEST_ENABLE_BT) {
+            Log.i("MainActivity", "ACTIVIDAD REGISTRADA")
+        } else if (result.resultCode == RESULT_OK) {
+            val uri = result.data?.data
+            // Seleccionar una canción fue exitoso, ahora enviar la canción a la Raspberry Pi por Bluetooth y reproducir en la bocina.
+            if (uri != null) {
+                val path = uri.path  // Obtener la ruta de la canción seleccionada
+                // Aquí deberías implementar la lógica para enviar el archivo de audio por Bluetooth y reproducir en la bocina.
+                // Puedes usar la variable 'path' para obtener la ruta del archivo de audio y luego enviarlo por Bluetooth.
             }
         }
     }
