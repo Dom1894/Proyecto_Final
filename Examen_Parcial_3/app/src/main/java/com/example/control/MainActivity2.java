@@ -38,16 +38,16 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        /*boton_ventanas=(ImageButton) findViewById(R.id.boton_ventanas);
+        boton_ventanas=(ImageButton) findViewById(R.id.boton_ventanas);
         boton_ventanas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Crear el Intent para abrir la nueva actividad
-                Intent intent = new Intent(getApplicationContext(), ventanas.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity4.class);
                 // Iniciar la nueva actividad
                 startActivity(intent);
             }
-        });*/
+        });
 
     }
 }

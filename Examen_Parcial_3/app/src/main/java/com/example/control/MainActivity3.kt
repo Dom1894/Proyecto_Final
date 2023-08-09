@@ -54,7 +54,7 @@ class MainActivity3 : AppCompatActivity(), SensorEventListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main3)
 
         //////////////
         val seleccionar_musica = findViewById<Button>(R.id.seleccionar_musica)
