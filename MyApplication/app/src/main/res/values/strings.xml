@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">gimapp</string>
+    <string name="msg_token_fmt">Token: %1$s</string>
+    <string name="cerrado">cerrado</string>
+    <string name="abierto">abierto</string>
+    <string name="encendido">encendido</string>
+    <string name="apagado">apagado</string>
+    <string-array name="songs_array">
+        <item>ojo</item>
+        <!-- Agregar nombres de canciones aquí -->
+    </string-array>
+</resources>
