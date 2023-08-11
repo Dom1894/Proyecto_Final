@@ -53,16 +53,6 @@ class MainActivity4 : AppCompatActivity(), SensorEventListener {
     }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        //////////////////////
-
-
-        val ventanas_ON = findViewById<Button>(R.id.ventanas_ON)
-        val ventanas_off = findViewById<Button>(R.id.ventanas_off)
-
-
-
-        //////////////////////
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
