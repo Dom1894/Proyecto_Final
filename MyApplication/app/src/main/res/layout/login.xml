@@ -11,7 +11,7 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:src="@drawable/gimnasio"
         />
 
@@ -47,6 +47,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Iniciar sesión" />
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/NEW"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nuevo usuario" />
 
     <TextView
         android:id="@+id/mensajes"

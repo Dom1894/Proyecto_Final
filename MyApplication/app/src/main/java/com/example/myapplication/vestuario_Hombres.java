@@ -138,6 +138,45 @@ public class vestuario_Hombres extends AppCompatActivity {
                 emisor.enviarDatos(clave, valor);
             }
         });
-        
+        pausaImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
+            }
+        });
+
+        playImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+                    mediaPlayer.start();
+                }
+            }
+        });
+        toggleButton3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String valor ;
+                if (isChecked) {
+                    valor = "apagado";
+                } else {
+                    valor = "encendido";
+                }
+                String clave = "vestuario_Hombres_ventana";
+                emisor.enviarDatos(clave, valor);
+            }
+        });
+        regresarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(vestuario_Hombres.this, menu.class);
+                startActivity(intent);
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
+            }
+        });
     }
 }

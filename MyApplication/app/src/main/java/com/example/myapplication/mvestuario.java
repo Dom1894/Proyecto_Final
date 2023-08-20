@@ -1,9 +1,14 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
@@ -11,6 +16,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,15 +26,29 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
+
 public class mvestuario extends AppCompatActivity {
-    ToggleButton toggleButton,toggleButton2,toggleButton3;
-    ImageView lampara,pausaImage,playImage;
+    ToggleButton toggleButton, toggleButton2, toggleButton3;
+    ImageView lampara, pausaImage, playImage;
 
     private MediaPlayer mediaPlayer;
     private SharedPreferences sharedPreferences;
 
     SeekBar intensitySeekBar;
     Button regresarButton;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothSocket bluetoothSocket;
+    private OutputStream outputStream;
+    private boolean isMusicPlaying = false;
+    private Spinner songSpinner;
+    private static final int REQUEST_BLUETOOTH_PERMISSION = 1;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +60,20 @@ public class mvestuario extends AppCompatActivity {
         intensitySeekBar = findViewById(R.id.intensity_seekbar);
         lampara = findViewById(R.id.lampara);
         regresarButton = findViewById(R.id.regresar);
-        Spinner songSpinner = findViewById(R.id.songSpinner);
+        songSpinner = findViewById(R.id.songSpinner);
         pausaImage = findViewById(R.id.pausa);
         playImage = findViewById(R.id.play);
 
         final int activatedColor = getResources().getColor(R.color.toggle_color);
         final int deactivatedColor = Color.YELLOW;
+
+        // Inicialización de Bluetooth
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            // El dispositivo no soporta Bluetooth
+            return;
+        }
+
         Emisor emisor = new Emisor();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -54,7 +82,7 @@ public class mvestuario extends AppCompatActivity {
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String valor ;
+                String valor;
                 if (isChecked) {
                     lampara.setColorFilter(null);
                     valor = "apagado";
@@ -70,6 +98,7 @@ public class mvestuario extends AppCompatActivity {
                 editor.apply();
             }
         });
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.songs_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -117,7 +146,7 @@ public class mvestuario extends AppCompatActivity {
         toggleButton2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String valor ;
+                String valor;
                 if (isChecked) {
                     valor = "apagado";
                     intensitySeekBar.setVisibility(View.GONE);
@@ -144,6 +173,8 @@ public class mvestuario extends AppCompatActivity {
             public void onClick(View v) {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
+                    isMusicPlaying = false;
+                    stopMusicOverBluetooth();
                 }
             }
         });
@@ -153,13 +184,16 @@ public class mvestuario extends AppCompatActivity {
             public void onClick(View v) {
                 if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                     mediaPlayer.start();
+                    isMusicPlaying = true;
+                    sendMusicOverBluetooth();
                 }
             }
         });
+
         toggleButton3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String valor ;
+                String valor;
                 if (isChecked) {
                     valor = "apagado";
                 } else {
@@ -179,5 +213,103 @@ public class mvestuario extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void sendMusicOverBluetooth() {
+        if (isMusicPlaying && bluetoothAdapter.isEnabled()) {
+            // Obtener la lista de dispositivos Bluetooth emparejados
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_PERMISSION);
+                return;
+            }
+
+            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+            // Buscar el dispositivo específico al que deseas conectar (por ejemplo, por nombre)
+            BluetoothDevice targetDevice = null;
+            for (BluetoothDevice device : pairedDevices) {
+                if (device.getName().equals("Nombre del dispositivo")) {
+                    targetDevice = device;
+                    break;
+                }
+            }
+
+            if (targetDevice != null) {
+                try {
+                    UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+                    bluetoothSocket = targetDevice.createRfcommSocketToServiceRecord(uuid);
+                    bluetoothSocket.connect();
+
+                    // Inicializar el flujo de salida para enviar datos
+                    outputStream = bluetoothSocket.getOutputStream();
+
+                    // Obtener el ID de la canción seleccionada
+                    int songId = getResources().getIdentifier(
+                            songSpinner.getSelectedItem().toString(),
+                            "raw", getPackageName());
+
+                    // Abrir el recurso de la canción
+                    InputStream musicStream = getResources().openRawResource(songId);
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = musicStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    // Cerrar el flujo de salida y liberar recursos
+                    outputStream.close();
+                    musicStream.close();
+
+                    // Cerrar el socket Bluetooth
+                    bluetoothSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    try {
+                        if (outputStream != null) {
+                            outputStream.close();
+                        }
+
+                        if (bluetoothSocket != null) {
+                            bluetoothSocket.close();
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    private void stopMusicOverBluetooth() {
+        if (!isMusicPlaying && bluetoothAdapter.isEnabled()) {
+            if (!isMusicPlaying && bluetoothAdapter.isEnabled()) {
+                try {
+                    // Cerrar el flujo de salida y liberar recursos
+                    if (outputStream != null) {
+                        outputStream.close();
+                        outputStream = null;
+                    }
+
+                    // Cerrar el socket Bluetooth
+                    if (bluetoothSocket != null) {
+                        bluetoothSocket.close();
+                        bluetoothSocket = null;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cerrar BluetoothSocket y liberar recursos
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

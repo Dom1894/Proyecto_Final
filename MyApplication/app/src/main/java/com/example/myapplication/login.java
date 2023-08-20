@@ -34,7 +34,7 @@ import org.json.JSONObject;
 
 public class login extends AppCompatActivity {
     EditText usernameEditText, passwordEditText;
-    Button loginButton;
+    Button loginButton,NEW;
     TextView mensajes;
     private String tipo;
     private String contraseñat;
@@ -48,12 +48,20 @@ public class login extends AppCompatActivity {
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
         usernameEditText = (EditText) findViewById(R.id.usernameEditText);
         mensajes = (TextView) findViewById(R.id.mensajes);
+        NEW = (Button) findViewById(R.id.NEW);
         registar_dispositivo();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validarusuario();
+            }
+        });
+        NEW.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent inten =new Intent(login.this, registro.class);
+                startActivity(inten);
             }
         });
     }

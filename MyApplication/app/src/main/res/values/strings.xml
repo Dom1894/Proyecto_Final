@@ -7,6 +7,17 @@
     <string name="apagado">apagado</string>
     <string-array name="songs_array">
         <item>ojo</item>
-        <!-- Agregar nombres de canciones aquí -->
+        <item>for_the_glory</item>
+        <item>eye_of_the_storm</item>
+        <item>ella_se_hizo_eseo</item>
+        <item>el_tiki</item>
+        <item>bailame</item>
+        <item>ahora_me_llama</item>
+        <item>lloro</item>
+        <item>me_llueven</item>
+        <item>eye_of_the_storm</item>
+
+
+
     </string-array>
 </resources>
