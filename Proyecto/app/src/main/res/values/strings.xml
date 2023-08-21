@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MQTT</string>
+    <string name="encendid" />
+    <string name="apagado" />
+    <string name="encendido" />
+    <string name="abierto" />
+    <string name="cerrado" />
+</resources>
